@@ -1,12 +1,21 @@
-var mysql = require("mysql1");
+var mysql = require("mysql");
 
-var connection = mysql.createConnection({
-  port: 3306,
+var connection;
+
+if(process.env.JAWDB_URL){
+ connection = mysql.createConnection(process.env.JAWSDB_URL);
+}else{
+  connection = mysql.createConnection({
+    port: 3306,
   host: "localhost",
   user: "root",
   password: "Mysql4me1$",
   database: "burgers_db"
-});
+
+  });
+};
+  
+
 
 // Make connection.
 connection.connect(function(err) {
@@ -16,6 +25,6 @@ connection.connect(function(err) {
   }
   console.log("connected as id " + connection.threadId);
 });
-
+connection.connect();
 // Export connection for our ORM to use.
 module.exports = connection;
