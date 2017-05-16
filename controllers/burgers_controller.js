@@ -1,29 +1,49 @@
 var express = require("express");
+
 var router = express.Router();
+
 var burger = require("../models/burger.js");
 
-var burger = {
-	all : function(cb){
-		orm.all("burgers", function(res){
-			cb(res);
-		});
-	};
-	create: function(cols, vals, cb){
-		orm.create("burgers", cols, vals, function(res){
-			cb(res);
-		});
+router.get("/", function(req, res) {
+  burger.all(function(data) {
+    var hbsObject = {
+      burgers: data
+    };
+    console.log(hbsObject);
+    res.render("index", hbsObject);
+  });
+});
 
-	};
-	update: function(objColVals, condition, cb){
-		orm.update("burgers", objColVals, condition, function(res){
-			cb(res);
-		});
-	},
-	delete: function(condition, cb){
-		orm.delete("burgers", condition, function(res){
-			cb(res);
-		});
-	}
-};
+router.post("/", function(req, res) {
+  burger.create([
+    "name", "devoured"
+  ], [
+    req.body.name, req.body.devoured
+  ], function() {
+    res.redirect("/");
+  });
+});
 
-module.exports = burger;
+router.put("/:id", function(req, res) {
+  var condition = "id = " + req.params.id;
+
+  console.log("condition", condition);
+
+  burger.update({
+    devoured: req.body.devoured
+  }, condition, function() {
+    res.redirect("/");
+  });
+});
+
+router.delete("/:id", function(req, res) {
+  var condition = "id = " + req.params.id;
+
+  burger.delete(condition, function() {
+    res.redirect("/");
+  });
+});
+
+// Export routes for server.js to use.
+module.exports = router;
+
